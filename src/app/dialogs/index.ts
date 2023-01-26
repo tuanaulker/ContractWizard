@@ -1,0 +1,1 @@
+export { TableDialogComponent } from './table-dialog/table-dialog.component'

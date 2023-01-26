@@ -1,0 +1,224 @@
+<body>
+
+  <div class="general">
+    <h1 class="container" style="font: 30px Arial, sans-serif;">Contract Wizard</h1>
+
+    <mat-stepper class="general" orientation="vertical">
+      <mat-step>
+        <ng-template matStepLabel>ENTER ROOM TYPES</ng-template>
+        <ng-template matStepContent>
+          <div class="container">
+            <div class="room-container">
+              <mat-form-field hintLabel="Max 5 characters" appearance="fill">
+                <mat-label>Enter Room Type Code</mat-label>
+                <input matInput #input maxlength="5" [(ngModel)]="inputCode" placeholder="STD"
+                  oninput="this.value = this.value.toUpperCase()">
+                <mat-hint align="end">{{input.value.length}}/5</mat-hint>
+              </mat-form-field>
+              &nbsp;
+              <mat-form-field appearance="fill">
+                <mat-label>Room Type Name</mat-label>
+                <input matInput #input [(ngModel)]="inputName" placeholder="Standard">
+              </mat-form-field>
+
+              <br>
+              <mat-form-field class="mx-2 multiplier">
+                <mat-label>Price 1 Multiplier</mat-label>
+                <input [(ngModel)]="priceMultiplier1" matInput type="number" value="1" min="0">
+              </mat-form-field>
+              &nbsp;
+              <mat-form-field class="mx-2 multiplier">
+                <mat-label>Price 2 Multiplier</mat-label>
+                <input [(ngModel)]="priceMultiplier2" matInput type="number" value="1" min="0">
+              </mat-form-field>
+              &nbsp;
+              <mat-form-field class="mx-2 multiplier">
+                <mat-label>Price 3 Multiplier</mat-label>
+                <input [(ngModel)]="priceMultiplier3" matInput type="number" value="1" min="0">
+              </mat-form-field>
+              &nbsp;
+              <div class="search-button-bar">
+                <button class="search-button" mat-flat-button color="primary" [disabled]="isDisabled"
+                  (click)="addRoomType()">Add Room
+                  Type</button>
+              </div>
+            </div>
+            <br>
+            <div>
+              <table mat-table [dataSource]="roomTypeData" class="mat-elevation-z8 tableD"
+                *ngIf="roomTypes.length != 0">
+
+                <ng-container matColumnDef="code">
+                  <th mat-header-cell *matHeaderCellDef> Room Type Code </th>
+                  <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef> Room Type Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+                  </ng-container>
+
+
+                  <ng-container matColumnDef="price1">
+                    <th mat-header-cell *matHeaderCellDef> Price Multiplier 1 </th>
+                    <td mat-cell *matCellDef="let element"> {{element.priceMu1}} </td>
+                  </ng-container>
+
+
+                  <ng-container matColumnDef="price2">
+                    <th mat-header-cell *matHeaderCellDef> Price Multiplier 2 </th>
+                    <td mat-cell *matCellDef="let element"> {{element.priceMu2}} </td>
+                  </ng-container>
+
+
+                  <ng-container matColumnDef="price3">
+                    <th mat-header-cell *matHeaderCellDef> Price Multiplier 3 </th>
+                    <td mat-cell *matCellDef="let element"> {{element.priceMu3}} </td>
+                  </ng-container>
+
+
+                  <tr mat-header-row *matHeaderRowDef="roomTypeColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: roomTypeColumns;"></tr>
+                </ng-container>
+              </table>
+            </div>
+          </div>
+          <button mat-button matStepperNext>Next</button>
+        </ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>DATES</ng-template>
+        <ng-template matStepContent>
+          <div class="container">
+            <mat-form-field class="mx-2 date">
+              <mat-label>Start Date</mat-label>
+              <input [(ngModel)]="startDate" matInput [matDatepicker]="startPicker" [min]="minDate"
+                onkeydown="return false">
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+            </mat-form-field>
+
+            <br>
+
+            <div *ngIf="numberofRoomType != null && numberofRoomType != 0"> Enter Room Type's Base prices related to the
+              selected date</div>
+            <br>
+
+            <div *ngFor="let item of roomTypes; index as i">
+              <mat-form-field *ngIf="numberofRoomType != null && numberofRoomType != 0" class="mx-2 base">
+                <mat-label>{{ item.code }}</mat-label>
+                <input matInput type="number" [(ngModel)]="basesNum[i]" min="0">
+              </mat-form-field>
+            </div>
+
+            <br>
+
+            <div class="search-button-bar">
+              <button class="search-button" mat-flat-button color="primary" (click)="addDate()">Add Date</button>
+            </div>
+
+            &nbsp;
+
+            <table mat-table [dataSource]="dateData" class="tableP mat-elevation-z8" *ngIf="dates.length != 0">
+
+              <ng-container matColumnDef="beginDate">
+                <th mat-header-cell *matHeaderCellDef> Begin Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.beginDate | date: 'dd/MM/yyyy' }} </td>
+
+                <ng-container matColumnDef="endDate">
+                  <th mat-header-cell *matHeaderCellDef> End Date </th>
+                  <td mat-cell *matCellDef="let element"> {{element.endDate | date: 'dd/MM/yyyy' }} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="dateColumnsP2"></tr>
+                <tr mat-row *matRowDef="let row; columns: dateColumnsP2;"></tr>
+              </ng-container>
+            </table>
+          </div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </ng-template>
+      </mat-step>
+
+      <mat-step>
+        <ng-template matStepLabel>TABLE </ng-template>
+        <div *ngIf="resultData.data.length == 0"> After you entered Room Type and Dates you will see Table</div>
+        <div *ngIf="baseData.data.length != 0"> Tablo of Base Price </div>
+        <div class="container" style="display:flex">
+          <table mat-table [dataSource]="baseData" class="tableD mat-elevation-z80" *ngIf="baseData.data.length != 0">
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-icon-button [matMenuTriggerFor]="menu" [matMenuTriggerData]="{ element }">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef> Code </th>
+              <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Name </th>
+              <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+            </ng-container>
+
+            <ng-container [matColumnDef]="column" *ngFor="let column of dateColumns; let i = index">
+              <th class="colDate" mat-header-cell *matHeaderCellDef> {{ column }} </th>
+              <td mat-cell *matCellDef="let element"> {{ element.basePrice[i] }} </td>
+            </ng-container>
+            
+
+            <tr mat-header-row *matHeaderRowDef="baseColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: baseColumns;"></tr>
+          </table>
+        </div>
+        <mat-menu #menu>
+          <ng-template matMenuContent let-element="element">
+            <button mat-menu-item (click)="update(element)">Update</button>
+          </ng-template>
+        </mat-menu>
+
+        <br>
+
+        <div *ngIf="resultData.data.length != 0"> Tablo of All Prices </div>
+        <div class="container" style="display:flex">
+          <table mat-table [dataSource]="resultData" class="tableD mat-elevation-z80"
+            *ngIf="resultData.data.length != 0">
+
+            <ng-container matColumnDef="code">
+              <th mat-header-cell *matHeaderCellDef> Code </th>
+              <td mat-cell *matCellDef="let element"> {{element.roomTypecode}} </td>
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef> Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.roomTypeName}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="priceName">
+                <th mat-header-cell *matHeaderCellDef> Price Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.priceName}} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="multiplier">
+                <th mat-header-cell *matHeaderCellDef> Multiplier </th>
+                <td mat-cell *matCellDef="let element"> {{element.multiplier}} </td>
+              </ng-container>
+            </ng-container>
+
+            <ng-container [matColumnDef]="column" *ngFor="let column of dateColumns; let i = index">
+              <th class="colDate" mat-header-cell *matHeaderCellDef> {{column}} </th>
+              <td mat-cell *matCellDef="let element"> {{element.price[i]}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="resultColumn"></tr>
+            <tr mat-row *matRowDef="let row; columns: resultColumn;"></tr>
+          </table>
+        </div>
+        <button mat-button matStepperPrevious>Back</button>
+      </mat-step>
+    </mat-stepper>
+  </div>
+
+</body>
